@@ -10,6 +10,8 @@
 include "../../global.php";
 //require_once "$root/admin/includes/db-connect.php";
 
+use Coursegator\Classes\Validator;
+
 ?>
 
 
@@ -24,11 +26,12 @@ include "../../global.php";
 
 if (isset($_POST['submit'])) {
 
-    $name = mysqli_real_escape_string($conn, trim(htmlspecialchars($_POST['name'])));
+    $name = mysqli_real_escape_string($db->getConn(), trim(htmlspecialchars($_POST['name'])));
 }
 
 //validations
-$errors = [];
+//$errors = [];
+$validator = new Validator;
 
 /* //validate name:  (required / string / 255)
 if(empty($name)){
@@ -39,9 +42,14 @@ $errors[] = "Name must be string containing characters";
 $errors[] = "Name length should not exceed 255 characters";
 } */
 
-$errors[] = validateName($name);
+//$errors[] = validateName($name);
 
-$errors = cleanErrors($errors);
+//$errors = cleanErrors($errors);
+
+
+$validator->str($name, "name", 255);
+
+
 
 /* if(empty($errors)){
 
@@ -67,22 +75,52 @@ if (empty($errors)) {
 
     //insert data in reservations table
 
-    $isInserted = insert(
-        $conn,
-        "cats",
-        "name",
-        "'$name'"
-    );
+//    $isInserted = insert(
+//        $conn,
+//        "cats",
+//        "name",
+//        "'$name'"
+//    );
 
-    if ($isInserted) {
-        //redirect back with success message
-        $_SESSION['success'] = "you added category successflly";
-        header("location:../all-categories.php");
+
+//    $isInserted = $db->insert("cats", "name", "$name");
+
+//    echo "<pre>";
+//    print_r($db->getConn());
+//    echo "<pre>";
+//    die;
+
+//    if ($isInserted) {
+//        //redirect back with success message
+//        $_SESSION['success'] = "you added category successflly";
+//        header("location:../all-categories.php");
+//    }
+//    //mysqli_close($conn);
+//} else {
+//    $_SESSION['errors'] = $errors;
+//    header("location:../add-category.php");
+//}
+
+
+
+
+$isInserted = $db->insert(
+            "cats",
+            "name",
+            "'$name'"
+        );
+
+
+        if ($isInserted) {
+            //redirect back with success message
+            $_SESSION['success'] = "you added category successflly";
+            header("location:../all-categories.php");
+        }
+        //mysqli_close($conn);
+    } else {
+        //$_SESSION['errors'] = $errors;
+        $session->set('errors', $validator->getErrors());
+        header("location:../add-category.php");
     }
-    //mysqli_close($conn);
-} else {
-    $_SESSION['errors'] = $errors;
-    header("location:../add-category.php");
-}
 
 ?>

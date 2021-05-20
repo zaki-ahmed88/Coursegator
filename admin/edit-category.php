@@ -1,7 +1,9 @@
 
 <!-- like handle-add-category.php -->
 
-<?php 
+<?php
+
+
 include("../global.php");
 include("$root/admin/includes/header.php") ?>
 

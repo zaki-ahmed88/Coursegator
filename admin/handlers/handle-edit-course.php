@@ -36,9 +36,9 @@ if (isset($_POST['submit'])) {
     $id = $_GET['id'];
     $imgOldName = $_GET['imgOldName'];
 
-    $name = mysqli_real_escape_string($conn, trim(htmlspecialchars($_POST['name'])));
-    $desc = mysqli_real_escape_string($conn, trim(htmlspecialchars($_POST['desc'])));
-    $cat_id = mysqli_real_escape_string($conn, trim(htmlspecialchars($_POST['cat_id'])));
+    $name = mysqli_real_escape_string($db->getConn(), trim(htmlspecialchars($_POST['name'])));
+    $desc = mysqli_real_escape_string($db->getConn(), trim(htmlspecialchars($_POST['desc'])));
+    $cat_id = mysqli_real_escape_string($db->getConn(), trim(htmlspecialchars($_POST['cat_id'])));
 
 
 
@@ -254,10 +254,12 @@ if (isset($_POST['submit'])) {
             //redirect back with success message
             $_SESSION['success'] = "you Updated course successflly";
             header("location:../all-courses.php");
-        }
-        //mysqli_close($conn);} else {
+        }else{
+            //mysqli_close($conn);} else {
             $session->set('errors', $validator->getErrors());
-        header("location:../edit-course.php?id=$id");
+            header("location:../edit-course.php?id=$id");
+        }
+
     }
 }
 

@@ -11,6 +11,7 @@
 
 include("../../global.php");
 // require_once("$root/admin/includes/db-connect.php");
+use Coursegator\Classes\Validator;
 
 
 $servername = "localhost";
@@ -44,13 +45,9 @@ if (isset($_POST['submit'])) {
     $id = $_GET['id'];
 
 
-    $name = mysqli_real_escape_string($conn, trim(htmlspecialchars($_POST['name'])));
+    $name = mysqli_real_escape_string($db->getConn(), trim(htmlspecialchars($_POST['name'])));
 
 
-    $errors = [];
-    echo "<pre>";
-    print_r($_POST);
-    echo "<pre>";
     /*  //validate name:  (required / string / 255)
         if(empty($name)){
             $errors[] = "Name is required";
@@ -60,69 +57,106 @@ if (isset($_POST['submit'])) {
             $errors[] = "Name length should not exceed 255 characters";
         } */
 
-    $errors[] = validateName($name);
+//    $errors[] = validateName($name);
+
+
+
+
+//    $errors = cleanErrors($errors);
+
+
+
+    $validator = new Validator;
+
+    //$errors[] = validateName($name);
+    $validator->str($name, "name", 255);
 
 
 
 
 
 
-    $errors = cleanErrors($errors);
 
     //validations
 
     /* if(empty($errors)){
-    
+
             //insert data in reservations table
-    
+
             $sql = "update cats set name = '$name' where id = $id";
-    
+
             if (mysqli_query($conn, $sql) == true) {
                 //redirect back with success message
                 $_SESSION['success'] = "you Updated category successflly";
                 header("location:../all-categories.php");
             }
             //mysqli_close($conn);
-                
-                
+
+
             } else {
                 $_SESSION['errors'] = $errors;
                 header("location:../edit-category.php?id=$id");
-               
+
             } */
 
 
 
 
 
-    if (empty($errors)) {
+//    if (empty($errors)) {
+//
+//        //insert data in reservations table
+//
+//        $sql = "update cats set name = '$name' where id = $id";
+//
+//        $isUpdated = update(
+//            $conn,
+//            "cats",
+//            "name = '$name'",
+//            "where id = $id"
+//        );
+//
+//
+//
+//        if ($isUpdated) {
+//            //redirect back with success message
+//            $_SESSION['success'] = "you Updated category successflly";
+//            header("location:../all-categories.php");
+//        }
+//        //mysqli_close($conn);
+//        else{
+//            header("location:../edit-category.php?id=$id");
+//        }
+//    } else {
+//        $_SESSION['errors'] = $errors;
+//        header("location:../edit-category.php?id=$id");
+//    }
+}
 
-        //insert data in reservations table
 
-        $sql = "update cats set name = '$name' where id = $id";
 
-        $isUpdated = update(
-            $conn,
-            "cats",
-            "name = '$name'",
-            "where id = $id"
-        );
+if (empty($errors)) {
 
-        
+
+
+            $isUpdated = $db->update(
+                "cats",
+                "name = '$name'",
+                "id = $id"
+            );
+
+
 
         if ($isUpdated) {
             //redirect back with success message
             $_SESSION['success'] = "you Updated category successflly";
             header("location:../all-categories.php");
-        }
-        //mysqli_close($conn);
-        else{
+        }else {
+            //mysqli_close($conn);} else {
+            $session->set('errors', $validator->getErrors());
             header("location:../edit-category.php?id=$id");
+
         }
-    } else {
-        $_SESSION['errors'] = $errors;
-        header("location:../edit-category.php?id=$id");
-    }
 }
 
 
